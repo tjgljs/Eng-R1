@@ -62,17 +62,7 @@ const ComputeDemo = () => {
     }
 
     try {
-      // Parse and validate AST input
-    //   const parsedAST = JSON.parse(astInput);
-    //   setAST(parsedAST); // Update the state with the valid AST
-
-    //   // Encode the AST as a bytes array
-    //   const astBytes = ethers.toUtf8Bytes(JSON.stringify(parsedAST));
-
-    //   console.log("astBytes",astBytes)
-    //const logicIdUint256 = ethers.BigNumber.from(logicId);
-
-      // Call the compute function
+     
       const computeResult = await contract.compute(logicId, numbers, {
         value: ethers.parseEther('0.01'), // 发送 0.01 ETH 作为交易费用
       });
@@ -152,37 +142,44 @@ const ComputeDemo = () => {
        //签名
     const messageHashBytes=ethers.getBytes(msgHash)
 
-    const signature=await signer.signMessage(messageHashBytes)
+    const signature1=await signer.signMessage(messageHashBytes)
 
-    console.log(`签名：${signature}`)
-      setSignature(signature);
+    setSignature(signature1);
       setHash(msgHash);
       setError(null);
+
+      const updatedSignature = signature1;
+
+      const requestDate = { requestId, signature: updatedSignature, astBytes, numbers };
+
+
+    console.log("requestDate",requestDate)
+
+    console.log(`签名：${signature1}`)
+      
+
+      const response = await fetch('http://localhost:3010/callbackBySigner', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestDate),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to call API');
+    }
+
+    const responseData = await response.json();
+    console.log('Response from server:', responseData);
+    return responseData; // 可能需要处理返回的数据
+
     } catch (error) {
       console.error('Error signing message:', error);
       setError('Error signing message.');
     }
 
-    try {
-        const response = await fetch('http://localhost:3010/callbackBySigner', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ requestId, signature,astBytes,numbers }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to call API');
-        }
-
-        const responseData = await response.json();
-        console.log('Response from server:', responseData);
-        return responseData; // 可能需要处理返回的数据
-    } catch (error) {
-        console.error('Error calling backend API:', error.message);
-        throw error; // 可能需要进一步处理错误
-    }
+   
   };
   
 
@@ -213,13 +210,7 @@ const ComputeDemo = () => {
           }}
         />
       </div>
-      {/* <div>
-        <label>AST:</label>
-        <textarea
-          value={astInput}
-          onChange={(e) => setASTInput(e.target.value)}
-        />
-      </div> */}
+      
 
       <div>
         <label>计算逻辑ID:</label>

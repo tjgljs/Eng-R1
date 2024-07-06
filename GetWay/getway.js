@@ -506,6 +506,11 @@ try {
 
     // 使用所有者的私钥调用合约的 callbackBySigner 函数
     console.log("result.data.result",result.data.result)
+
+    console.log("5555",requestId)
+    console.log("6666",result.data.result)
+    console.log("7777",signature)
+    debugger
     const tx = await contract.connect(signer).callbackBySigner(requestId, result.data.result, signature);
     await tx.wait();
 
