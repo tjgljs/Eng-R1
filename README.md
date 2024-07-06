@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+#该项目展示了一个基于 React 的前端与以太坊智能合约（Oracle）的交互。
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#目录结构
+1.网关服务代码：GetWay文件夹
+2.前端+合约代码：react—dapp
 
-## Available Scripts
+#完成功能：
+1.Oracle合约设计与实现
+实现一个计算方法(根据需要设计输入参数)，允许任何用户调用，接受用户的执行逻辑和输入，每次调用收取0.01ETH的费用。
+实现一个只有所有者可以调用的回调 方法(根据需要设计输入参数)，将执行结果写回合约。
+2.网关服务设计和实现
+设计和实现网关服务:
+监听来自用户的链上请求。
+调用计算服务的/compute方法获取执行结果。
+使用回调方法将结果写回Oracle合约。
+3.基于上述实现，将计算逻辑与用户输入分离。允许用户通过合约方法预定义/注册计算逻辑，并在Oracle调用时指定执行逻辑的ID，以减少gas消耗。考虑如何将计算逻辑存储在合约中，并相应地更新Oracle、Gateway Service 和 Client 项目
+4.基于以上实现，允许用户通过签名的方式在链下调用 Oracle。一种可行的逻辑是:允许用户预存ETH，在 Oracle 执行完成后，提交结果时从用户存款中划走0.01 ETH 到可提现余额中。设计验证逻辑，防止恶意 Gateway 在没有合法请求的情况下拿走用户预存的 ETH。
 
-In the project directory, you can run:
+#功能总结：以上4个任务均完成，并且设计对应简单客户端页面 页面展示如下:
+<img width="783" alt="image" src="https://github.com/tjgljs/Eng-R1-phone-17340332001/assets/110324972/48f265b2-79cb-4289-82ef-dd92db6e173d">
 
-### `npm start`
+## 如何部署项目
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 本地先部署项目提供的compute API服务 
+http://localhost:3000/compute
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 启动Getway目录下的getway.js
+启动命令 node getway.js [注：在文件中替换合约部署者的私钥]
+依赖安装：npm install 
 
-### `npm test`
+### 切换到react-dapp 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+依赖安装：npm install 
 
-### `npm run build`
+###编译Oracle.sol合约 npx hardhat compile
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+###部署Oracle.sol合约 npx hardhat run scripts/deploy_Oracle.js --network bnbtest  [在hardhat.config中替换自己的钱包私钥]
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+###启动前端页面 npm start 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#操作流程：
+1.填写自己的逻辑公式，并注册，注册成功后生成对应逻辑公式的ID
+2.填写numbers数组，注意每个元素应使用空格间隔开
+3.可以使用两种方式进行链下运算
+方法一：直接填写对应的numbers值和你想要的逻辑公式的ID值，点击计算按钮，进行完成钱包交互，链下预言机服务回调数据写入合约结束后，点击获取结果可以查看运算结果（每次计算需消耗0.1个eth）
+方法二：直接填写对应的numbers值和你想要的逻辑公式的ID值，点击签名计算按钮，完成钱包交互签名，预言机自动回调函数写入运算结果到合约结束后，点击获取结果可以查看运算结果(需要提前充值eth到合约，每次计算结果写入合约时自动扣除0.01eth)
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
