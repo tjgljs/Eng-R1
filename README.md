@@ -17,7 +17,8 @@
 4.基于以上实现，允许用户通过签名的方式在链下调用 Oracle。一种可行的逻辑是:允许用户预存ETH，在 Oracle 执行完成后，提交结果时从用户存款中划走0.01 ETH 到可提现余额中。设计验证逻辑，防止恶意 Gateway 在没有合法请求的情况下拿走用户预存的 ETH。
 
 #功能总结：以上4个任务均完成，并且设计对应简单客户端页面 页面展示如下:
-<img width="783" alt="image" src="https://github.com/tjgljs/Eng-R1-phone-17340332001/assets/110324972/48f265b2-79cb-4289-82ef-dd92db6e173d">
+<img width="624" alt="image" src="https://github.com/tjgljs/Eng-R1-phone-17340332001/assets/110324972/bf42d09f-4a77-41ff-bc74-159059baf2d8">
+
 
 ## 如何部署项目
 
