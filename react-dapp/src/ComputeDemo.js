@@ -34,6 +34,10 @@ const ComputeDemo = () => {
   const [signature, setSignature] = useState('');
   const [hash, setHash] = useState('');
 
+  const [amount, setAmount] = useState('');
+  const [balance, setBalance] = useState('');
+  const [message, setMessage] = useState('');
+
   const CONTRACT_ADDRESS = '0x5aa543e827fbdbab61bfc5405353df3b9a67a8a1'; // Replace with your contract address
   const MyContractABI = myabi.abi; // Replace with your contract ABi
   const connectWalletAndGetContract = useCallback(async () => {
@@ -181,6 +185,54 @@ const ComputeDemo = () => {
 
    
   };
+
+  const handleWithdraw = async () => {
+    if (!window.ethereum) {
+      setMessage('Please install Metamask!');
+      return;
+    }
+    try {
+      const tx = await contract.withdraw(ethers.parseEther(amount));
+      await tx.wait();
+      getBalance();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeposit = async () => {
+    if (!window.ethereum) {
+      setMessage('Please install Metamask!');
+      return;
+    }
+
+    try {
+      const tx = await contract.deposit({ value: ethers.parseEther(amount) });
+      await tx.wait();
+
+      getBalance();
+    } catch (error) {
+      console.error(error);
+     
+    }
+  };
+
+  const getBalance = async () => {
+    if (!window.ethereum) {
+      setMessage('Please install Metamask!');
+      return;
+    }
+    try {
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    const signer = await provider.getSigner();
+      const balance = await contract.balances(signer.address);
+      setBalance(ethers.formatEther(balance));
+    } catch (error) {
+      console.error(error);
+      setMessage('Failed to fetch balance.');
+    }
+  };
+
   
 
   return (
@@ -249,11 +301,28 @@ const ComputeDemo = () => {
       <button onClick={handleQuery}>点击获取结果</button>
       {queryResult !== null && <div>计算结果: {queryResult}</div>}
 
+
+      <h2>充值提现</h2>
+      <div>
+        <label>数量 (ETH): </label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </div>
+      <button onClick={handleDeposit}>充值</button>
+      <button onClick={handleWithdraw}>提现</button>
+      <button onClick={getBalance}>获取余额</button>
+      {balance && <p>Balance: {balance} ETH</p>}
+      {message && <p>{message}</p>}
+
      
 
       
 
       {error && <div style={{ color: 'red' }}>{error}</div>}
+
     
     </div>
   );
